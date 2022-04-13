@@ -4,7 +4,7 @@ An English<=>Bangla Dictionary.
 
 ## Getting Started
 
-This project is a starting point for the Bangladeshi People and want learn English to Bengali and Bengali to English.
+This project is a starting point for the Bangladeshi People and want to learn English to Bengali and Bengali to English words.
 
 A few resources to get you started if you interested to contribute this project:
 
