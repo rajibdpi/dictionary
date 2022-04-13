@@ -89,9 +89,11 @@ class _HomePageState extends State<HomePage> {
                         return Card(
                           margin: const EdgeInsets.all(10),
                           child: ListTile(
-                            leading: Text(_items[index]["bn"]),
-                            title: Text(_items[index]["en"]),
-                            // subtitle: Text(_items[index]["description"]),
+                            leading: Text(_items[index]["en"]),
+                            title: Text(_items[index]["bn"]),
+                            subtitle:
+                                Text('en_syns-${_items[index]["en_syns"]} -- '
+                                    'bn_syns-${_items[index]["bn_syns"]}'),
                           ),
                         );
                       },
