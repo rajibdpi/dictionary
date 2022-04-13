@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +44,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List _items = [];
+
+  // Fetch content from the json file
+  Future<void> readJson() async {
+    final String response =
+        await rootBundle.loadString('assets/BengaliDictionary.json');
+    final data = await json.decode(response);
+    setState(() {
+      _items = data["words"];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
