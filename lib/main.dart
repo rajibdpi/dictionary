@@ -51,7 +51,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Center(
+          child: Text(widget.title),
+        ),
         actions: [
           IconButton(
             tooltip: 'Search words',
@@ -89,6 +91,86 @@ class _HomePageState extends State<HomePage> {
             );
           }
         },
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const UserAccountsDrawerHeader(
+              accountName: Text('Rajib Ahmed'),
+              accountEmail: Text('rajibdpi@gmail.com'),
+              currentAccountPicture: CircleAvatar(
+                radius: 50.0,
+                backgroundImage: AssetImage("assets/images/user.jpg"),
+              ),
+            ),
+            ListTile(
+              title: const Text('Home'),
+              leading: const Icon(
+                Icons.home_filled,
+                color: Colors.teal,
+              ),
+              onTap: () => {
+                // Then close the drawer
+                // Navigator.pop(context);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(
+                      title: 'E2B Dictionary',
+                    ),
+                  ),
+                ),
+              },
+            ),
+            ListTile(
+              title: const Text('About'),
+              leading: const Icon(Icons.more, color: Colors.blue),
+              onTap: () => {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(
+                      title: 'E2B Dictionary',
+                    ),
+                  ),
+                ),
+              },
+            ),
+            ListTile(
+              title: const Text('Contact'),
+              leading: const Icon(Icons.phone, color: Colors.red),
+              onTap: () => {
+                // Update the state of the app
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const HomePage(
+                      title: 'E2B Dictionary',
+                    ),
+                  ),
+                ),
+                // Then close the drawer
+                // Navigator.pop(context),
+              },
+            ),
+            ListTile(
+              title: const Text('Profile'),
+              leading: const Icon(Icons.logout, color: Colors.green),
+              onTap: () {
+                // Update the state of the app
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Logout'),
+              leading: const Icon(Icons.logout, color: Colors.green),
+              onTap: () {
+                // Update the state of the app
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
