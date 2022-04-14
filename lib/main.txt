@@ -1,0 +1,102 @@
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'E2B Dictionary',
+      theme: ThemeData(
+        // This is the theme of the application.
+        primarySwatch: Colors.teal,
+      ),
+      home: const HomePage(
+        title: 'E2B Dictionary',
+      ),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final List _items = [];
+  // Fetch content from the json file
+  Future<Iterable<List>> getWordsLocally() async {
+    final assetBundle = DefaultAssetBundle.of(context);
+    final localJson =
+        await assetBundle.loadString('assets/BengaliDictionary.json');
+    final data = await json.decode(localJson);
+    var words = data["words"] as List<dynamic>;
+    var tt = words.map((e) => _items.toList());
+    return tt;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            tooltip: 'Search words',
+            onPressed: () {
+              print('Search Button Pressed');
+            },
+            icon: const Icon(Icons.search),
+          )
+        ],
+      ),
+      body: FutureBuilder(
+        future: getWordsLocally(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(child: CircularProgressIndicator());
+            default:
+              if (snapshot.hasData) {
+                return SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: _items.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.all(10),
+                        child: ListTile(
+                          leading: Text(_items[index]["en"]),
+                          title: Text(_items[index]["bn"]),
+                          subtitle:
+                              Text('en_syns-${_items[index]["en_syns"]} -- '
+                                  'bn_syns-${_items[index]["bn_syns"]}'),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: Text('Error Error'),
+                );
+              }
+          }
+        },
+      ),
+    );
+  }
+}
