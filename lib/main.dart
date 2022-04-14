@@ -81,10 +81,16 @@ class _HomePageState extends State<HomePage> {
           child: Text(widget.title),
         ),
         actions: [
+          // TextField(
+          //   // onChanged: (value) => null,
+          //   onChanged: (value) => _runFilter(value),
+          //   decoration: const InputDecoration(
+          //       labelText: 'Search', suffixIcon: Icon(Icons.search)),
+          // ),
           IconButton(
             tooltip: 'Search words',
             onPressed: () {
-              search();
+              print('Pressed Search Button');
             },
             icon: const Icon(Icons.search),
           ),
