@@ -92,84 +92,86 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const UserAccountsDrawerHeader(
-              accountName: Text('Rajib Ahmed'),
-              accountEmail: Text('rajibdpi@gmail.com'),
-              currentAccountPicture: CircleAvatar(
-                radius: 50.0,
-                backgroundImage: AssetImage("assets/images/user.jpg"),
+      drawer: Padding(
+        padding: const EdgeInsets.only(top: 80),
+        child: Drawer(
+          child: ListView(
+            children: [
+              // const UserAccountsDrawerHeader(
+              //   accountName: Text('Rajib Ahmed'),
+              //   accountEmail: Text('rajibdpi@gmail.com'),
+              //   currentAccountPicture: CircleAvatar(
+              //     radius: 50.0,
+              //     backgroundImage: AssetImage("assets/images/user.jpg"),
+              //   ),
+              // ),
+              ListTile(
+                title: const Text('Dictionary'),
+                leading: const Icon(
+                  Icons.book,
+                  color: Colors.teal,
+                ),
+                onTap: () => {
+                  // Then close the drawer
+                  // Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(
+                        title: 'E2B Dictionary',
+                      ),
+                    ),
+                  ),
+                },
               ),
-            ),
-            ListTile(
-              title: const Text('Home'),
-              leading: const Icon(
-                Icons.home_filled,
-                color: Colors.teal,
+              ListTile(
+                title: const Text('Recent Search'),
+                leading: const Icon(Icons.history, color: Colors.blue),
+                onTap: () => {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(
+                        title: 'E2B Dictionary',
+                      ),
+                    ),
+                  ),
+                },
               ),
-              onTap: () => {
-                // Then close the drawer
-                // Navigator.pop(context);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(
-                      title: 'E2B Dictionary',
+              ListTile(
+                title: const Text('Favourites'),
+                leading: const Icon(Icons.heart_broken, color: Colors.red),
+                onTap: () => {
+                  // Update the state of the app
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(
+                        title: 'E2B Dictionary',
+                      ),
                     ),
                   ),
-                ),
-              },
-            ),
-            ListTile(
-              title: const Text('About'),
-              leading: const Icon(Icons.more, color: Colors.blue),
-              onTap: () => {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(
-                      title: 'E2B Dictionary',
-                    ),
-                  ),
-                ),
-              },
-            ),
-            ListTile(
-              title: const Text('Contact'),
-              leading: const Icon(Icons.phone, color: Colors.red),
-              onTap: () => {
-                // Update the state of the app
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(
-                      title: 'E2B Dictionary',
-                    ),
-                  ),
-                ),
-                // Then close the drawer
-                // Navigator.pop(context),
-              },
-            ),
-            ListTile(
-              title: const Text('Profile'),
-              leading: const Icon(Icons.logout, color: Colors.green),
-              onTap: () {
-                // Update the state of the app
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Logout'),
-              leading: const Icon(Icons.logout, color: Colors.green),
-              onTap: () {
-                // Update the state of the app
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-          ],
+                  // Then close the drawer
+                  // Navigator.pop(context),
+                },
+              ),
+              ListTile(
+                title: const Text('Add New Word'),
+                leading: const Icon(Icons.edit, color: Colors.blue),
+                onTap: () {
+                  // Update the state of the app
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: const Text('About'),
+                leading: const Icon(Icons.info, color: Colors.green),
+                onTap: () {
+                  // Update the state of the app
+                  // Then close the drawer
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
