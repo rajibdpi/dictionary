@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       drawer: Padding(
-        padding: const EdgeInsets.only(top: 80),
+        padding: const EdgeInsets.all(0),
         child: Drawer(
           child: ListView(
             children: [
