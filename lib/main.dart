@@ -47,6 +47,32 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+// Filter or Search option
+  void _runFilter(String enteredKeyword) {
+    List results = [];
+    if (enteredKeyword.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      results = _items;
+    } else {
+      results = _items
+          .where((words) =>
+              words['en'].toString().contains(enteredKeyword.toLowerCase()))
+          .toList();
+      // we use the toLowerCase() method to make it case-insensitive
+    }
+    // Refresh the UI
+    setState(() {
+      _items = results;
+    });
+  }
+
+  // TextField(
+  //     // onChanged: (value) => null,
+  //     onChanged: (value) => _runFilter(value),
+  //     decoration: const InputDecoration(
+  //         labelText: 'Search', suffixIcon: Icon(Icons.search)),
+  //   );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +84,7 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             tooltip: 'Search words',
             onPressed: () {
-              print('Search Button Pressed');
+              search();
             },
             icon: const Icon(Icons.search),
           ),
@@ -67,6 +93,12 @@ class _HomePageState extends State<HomePage> {
       body: FutureBuilder(
         future: readJson(),
         builder: (context, dynamic) {
+          // TextField(
+          //   // onChanged: (value) => null,
+          //   onChanged: (value) => _runFilter(value),
+          //   decoration: const InputDecoration(
+          //       labelText: 'Search', suffixIcon: Icon(Icons.search)),
+          // );
           if (_items.isNotEmpty) {
             return ListView.builder(
               itemCount: _items.length,
