@@ -37,7 +37,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List data = [];
   List filteredItems = [];
-  bool isSearching = true;
+  bool isSearching = false;
 
   // Fetch content from the json file
   Future<void> readJson() async {
@@ -102,34 +102,51 @@ class _HomePageState extends State<HomePage> {
         // title: Center(
         //   child: Text(widget.title),
         // ),
-        actions: [
-          IconButton(
-            tooltip: 'More',
-            onPressed: () {
-              print('Pressed on More Button');
-            },
-            icon: const Icon(Icons.more_vert),
-          ),
+        actions: <Widget>[
+          if (isSearching) IconButton(
+                  icon: const Icon(Icons.cancel),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = false;
+                      // filteredItems = data;
+                    });
+                  },
+                ) else IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = true;
+                    });
+                  },
+                )
         ],
       ),
-      body: ListView.builder(
-        itemCount: data.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            children: [
-              ListTile(
-                leading: CircleAvatar(
-                  child: Text(data[index]['en'][0].toString().toUpperCase()),
-                ),
-                title: Text(data[index]['en']),
-                subtitle: Text(data[index]['bn']),
-                onTap: () => {
-                  print(data[index]),
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: data.isNotEmpty
+            ? ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          child: Text(
+                              data[index]['en'][0].toString().toUpperCase()),
+                        ),
+                        title: Text(data[index]['en']),
+                        subtitle: Text(data[index]['bn']),
+                        onTap: () => {
+                          print(data[index]),
+                        },
+                      ),
+                    ],
+                  );
                 },
+              )
+            : const Center(
+                child: CircularProgressIndicator(),
               ),
-            ],
-          );
-        },
       ),
       drawer: Padding(
         padding: const EdgeInsets.all(0),
@@ -215,4 +232,13 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+class ( {
+}
+
+class ( {
+}
+
+class ( {
 }
