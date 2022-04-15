@@ -36,6 +36,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List _items = [];
+  bool isSearching = false;
 
   // Fetch content from the json file
   Future<void> readJson() async {
@@ -55,8 +56,10 @@ class _HomePageState extends State<HomePage> {
       results = _items;
     } else {
       results = _items
-          .where((words) =>
-              words['en'].toString().contains(enteredKeyword.toLowerCase()))
+          .where((word) => word['en']
+              .toString()
+              .toLowerCase()
+              .contains(enteredKeyword.toLowerCase()))
           .toList();
       // we use the toLowerCase() method to make it case-insensitive
     }
@@ -77,16 +80,25 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(widget.title),
-        ),
+        title: isSearching
+            ? const Text('E2B Dictionary')
+            : TextField(
+                onChanged: (value) {
+                  _runFilter(value);
+                },
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    hintText: "Search Word",
+                    hintStyle: TextStyle(color: Colors.white)),
+              ),
+        // title: Center(
+        //   child: Text(widget.title),
+        // ),
         actions: [
-          // TextField(
-          //   // onChanged: (value) => null,
-          //   onChanged: (value) => _runFilter(value),
-          //   decoration: const InputDecoration(
-          //       labelText: 'Search', suffixIcon: Icon(Icons.search)),
-          // ),
           IconButton(
             tooltip: 'Search words',
             onPressed: () {
