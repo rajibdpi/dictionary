@@ -3,8 +3,9 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "assets/AssetManifest.json": "33a2ebad3bf041f1b4604e1b903666ca",
+  "assets/AssetManifest.json": "1b92a2bfc5f696206913a7d14cb6e93d",
 "assets/assets/BengaliDictionary.json": "6115b0881151cd0ae1ea48c328218c9e",
+"assets/assets/images/user.jpg": "5ca4c24d012e942355bbd50d012a660a",
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
 "assets/fonts/MaterialIcons-Regular.otf": "7e7a6cccddf6d7b20012a548461d5d81",
 "assets/NOTICES": "c2bebe3641b7e93a9faa1770aa3e45ef",
@@ -18,9 +19,9 @@ const RESOURCES = {
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "d2634626e4b45f5ba42c4241607635a5",
-"/": "d2634626e4b45f5ba42c4241607635a5",
-"main.dart.js": "7c27c9b48d45c5ec12e923c81b81afcd",
+"index.html": "5bcbeffd59f955cd1ed03af5e7b428f8",
+"/": "5bcbeffd59f955cd1ed03af5e7b428f8",
+"main.dart.js": "30358b61fb0d3289d1d208dd2c3ba095",
 "manifest.json": "b5bbf615e8b6231a1e5a9fa95c64b651",
 "version.json": "03d1bb0f71ede507a79cdf0585becf5b"
 };
