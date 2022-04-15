@@ -103,15 +103,17 @@ class _HomePageState extends State<HomePage> {
         //   child: Text(widget.title),
         // ),
         actions: <Widget>[
-          if (isSearching) IconButton(
+          isSearching
+              ? IconButton(
                   icon: const Icon(Icons.cancel),
                   onPressed: () {
                     setState(() {
                       isSearching = false;
-                      // filteredItems = data;
+                      filteredItems = data;
                     });
                   },
-                ) else IconButton(
+                )
+              : IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: () {
                     setState(() {
