@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -35,18 +37,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List _items = [];
+  List data = [];
   List filteredItems = [];
   bool isSearching = false;
+
+  // Fetch content from the json file
+  Future<void> readJson() async {
+    final jsonResponse =
+        await rootBundle.loadString('assets/BengaliDictionary.json');
+    var jsonData = json.decode(jsonResponse);
+    // print(jsonData);
+    setState(() {
+      data = filteredItems = jsonData['words'];
+    });
+    // return 'Success';
+  }
+
 // Filter or Search option
   _runFilter(String enteredKeyword) {
     setState(
       () {
         if (enteredKeyword.isEmpty) {
           // if the search field is empty or only contains white-space, we'll display all users
-          filteredItems = _items;
+          filteredItems = data;
         } else {
-          filteredItems = _items
+          filteredItems = data
               .where((word) => word['en']
                   .toString()
                   .toLowerCase()
@@ -55,19 +70,15 @@ class _HomePageState extends State<HomePage> {
           // we use the toLowerCase() method to make it case-insensitive
         }
         // Refresh the UI
-        _items = filteredItems;
+        data = filteredItems;
       },
     );
   }
 
-  // Fetch content from the json file
-  Future<void> readJson() async {
-    final String response =
-        await rootBundle.loadString('assets/BengaliDictionary.json');
-    final data = await json.decode(response);
-    setState(() {
-      _items = filteredItems = data['words'];
-    });
+  @override
+  void initState() {
+    readJson();
+    super.initState();
   }
 
   @override
@@ -82,58 +93,41 @@ class _HomePageState extends State<HomePage> {
                 },
                 style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
-                    icon: Icon(
-                      Icons.search,
-                      color: Colors.white,
-                    ),
-                    hintText: "Search Word",
-                    hintStyle: TextStyle(color: Colors.white)),
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  hintText: "Search Word",
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
               ),
         // title: Center(
         //   child: Text(widget.title),
         // ),
         actions: [
           IconButton(
-            tooltip: 'Search words',
+            tooltip: 'More',
             onPressed: () {
-              print('Pressed Search Button');
+              print('Pressed on More Button');
             },
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.more_vert),
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: readJson(),
-        builder: (context, dynamic) {
-          // TextField(
-          //   // onChanged: (value) => null,
-          //   onChanged: (value) => _runFilter(value),
-          //   decoration: const InputDecoration(
-          //       labelText: 'Search', suffixIcon: Icon(Icons.search)),
-          // );
-          if (_items.isNotEmpty) {
-            return ListView.builder(
-              itemCount: _items.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    leading: Text(_items[index]["en"]),
-                    title: Text(_items[index]["bn"]),
-                    subtitle: Text('en_syns-${_items[index]["en_syns"]} -- '
-                        'bn_syns-${_items[index]["bn_syns"]}'),
-                  ),
-                );
-              },
-            );
-          } else {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [CircularProgressIndicator(), Text('Loading')],
+      body: ListView.builder(
+        itemCount: data.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Column(
+            children: [
+              ListTile(
+                leading: CircleAvatar(
+                  child: Text(data[index]['en'][0]),
+                ),
+                title: Text(data[index]['en']),
+                subtitle: Text(data[index]['bn']),
               ),
-            );
-          }
+            ],
+          );
         },
       ),
       drawer: Padding(
