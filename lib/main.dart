@@ -48,28 +48,28 @@ class _HomePageState extends State<HomePage> {
     var jsonData = json.decode(jsonResponse);
     // print(jsonData);
     setState(() {
-      data = filteredItems = jsonData['words'];
+      data = jsonData['words'];
     });
     // return 'Success';
   }
 
 // Filter or Search option
   _runFilter(String enteredKeyword) {
+    if (enteredKeyword.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      filteredItems = data;
+    } else {
+      filteredItems = data
+          .where((word) => word['en']
+              .toString()
+              .toLowerCase()
+              .contains(enteredKeyword.toLowerCase()))
+          .toList();
+      // we use the toLowerCase() method to make it case-insensitive
+    }
+    // Refresh the UI
     setState(
       () {
-        if (enteredKeyword.isEmpty) {
-          // if the search field is empty or only contains white-space, we'll display all users
-          filteredItems = data;
-        } else {
-          filteredItems = data
-              .where((word) => word['en']
-                  .toString()
-                  .toLowerCase()
-                  .contains(enteredKeyword.toLowerCase()))
-              .toList();
-          // we use the toLowerCase() method to make it case-insensitive
-        }
-        // Refresh the UI
         data = filteredItems;
       },
     );
@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               ListTile(
                 leading: CircleAvatar(
-                  child: Text(data[index]['en'][0]),
+                  child: Text(data[index]['en'][0].toString().toUpperCase()),
                 ),
                 title: Text(data[index]['en']),
                 subtitle: Text(data[index]['bn']),
