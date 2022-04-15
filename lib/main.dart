@@ -39,7 +39,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List data = [];
   List filteredItems = [];
-  bool isSearching = false;
+  bool isSearching = true;
 
   // Fetch content from the json file
   Future<void> readJson() async {
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: isSearching
+        title: !isSearching
             ? const Text('E2B Dictionary')
             : TextField(
                 onChanged: (value) {
