@@ -36,7 +36,29 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List _items = [];
+  List filteredItems = [];
   bool isSearching = false;
+// Filter or Search option
+  _runFilter(String enteredKeyword) {
+    setState(
+      () {
+        if (enteredKeyword.isEmpty) {
+          // if the search field is empty or only contains white-space, we'll display all users
+          filteredItems = _items;
+        } else {
+          filteredItems = _items
+              .where((word) => word['en']
+                  .toString()
+                  .toLowerCase()
+                  .contains(enteredKeyword.toLowerCase()))
+              .toList();
+          // we use the toLowerCase() method to make it case-insensitive
+        }
+        // Refresh the UI
+        _items = filteredItems;
+      },
+    );
+  }
 
   // Fetch content from the json file
   Future<void> readJson() async {
@@ -44,37 +66,9 @@ class _HomePageState extends State<HomePage> {
         await rootBundle.loadString('assets/BengaliDictionary.json');
     final data = await json.decode(response);
     setState(() {
-      _items = data['words'];
+      _items = filteredItems = data['words'];
     });
   }
-
-// Filter or Search option
-  void _runFilter(String enteredKeyword) {
-    List results = [];
-    if (enteredKeyword.isEmpty) {
-      // if the search field is empty or only contains white-space, we'll display all users
-      results = _items;
-    } else {
-      results = _items
-          .where((word) => word['en']
-              .toString()
-              .toLowerCase()
-              .contains(enteredKeyword.toLowerCase()))
-          .toList();
-      // we use the toLowerCase() method to make it case-insensitive
-    }
-    // Refresh the UI
-    setState(() {
-      _items = results;
-    });
-  }
-
-  // TextField(
-  //     // onChanged: (value) => null,
-  //     onChanged: (value) => _runFilter(value),
-  //     decoration: const InputDecoration(
-  //         labelText: 'Search', suffixIcon: Icon(Icons.search)),
-  //   );
 
   @override
   Widget build(BuildContext context) {
