@@ -147,14 +147,14 @@ class _HomePageState extends State<HomePage> {
         child: Drawer(
           child: ListView(
             children: [
-              // const UserAccountsDrawerHeader(
-              //   accountName: Text('Rajib Ahmed'),
-              //   accountEmail: Text('rajibdpi@gmail.com'),
-              //   currentAccountPicture: CircleAvatar(
-              //     radius: 50.0,
-              //     backgroundImage: AssetImage("assets/images/user.jpg"),
-              //   ),
-              // ),
+              const UserAccountsDrawerHeader(
+                accountName: Text('Rajib Ahmed'),
+                accountEmail: Text('rajibdpi@gmail.com'),
+                currentAccountPicture: CircleAvatar(
+                  radius: 50.0,
+                  backgroundImage: AssetImage("assets/images/user.jpg"),
+                ),
+              ),
               ListTile(
                 title: const Text('Dictionary'),
                 leading: const Icon(
