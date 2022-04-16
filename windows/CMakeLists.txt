@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(dictionary2 LANGUAGES CXX)
+project(dictionary LANGUAGES CXX)
 
-set(BINARY_NAME "dictionary2")
+set(BINARY_NAME "dictionary")
 
 cmake_policy(SET CMP0063 NEW)
 

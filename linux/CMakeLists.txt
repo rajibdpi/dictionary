@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "dictionary2")
-set(APPLICATION_ID "com.example.dictionary2")
+set(BINARY_NAME "dictionary")
+set(APPLICATION_ID "com.example.dictionary")
 
 cmake_policy(SET CMP0063 NEW)
 
