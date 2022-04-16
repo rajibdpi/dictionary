@@ -1,3 +1,4 @@
+import 'package:dictionary/detail.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -41,8 +42,7 @@ class _HomePageState extends State<HomePage> {
 
   // Fetch content from the json file
   Future<void> readJson() async {
-    final jsonResponse =
-        await rootBundle.loadString('assets/BengaliDictionary.json');
+    final jsonResponse = await rootBundle.loadString('assets/E2Bdatabase.json');
     var jsonData = json.decode(jsonResponse);
     // print(jsonData);
     setState(() {
@@ -138,8 +138,17 @@ class _HomePageState extends State<HomePage> {
                         ),
                         title: Text(data[index]['en']),
                         subtitle: Text(data[index]['bn']),
-                        onTap: () => {
-                          print(data[index]),
+                        onTap: () async {
+                          print(data[index]);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WordDetails(
+                                worden: data[index]['en'],
+                                wordbn: data[index]['bn'],
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ],
