@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                         title: Text(data[index]['en']),
                         subtitle: Text(data[index]['bn']),
                         onTap: () async {
-                          print(data[index]);
+                          // print(data[index]);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
