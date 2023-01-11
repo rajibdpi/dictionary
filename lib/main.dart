@@ -1,4 +1,5 @@
-import 'package:dictionary/detail.dart';
+import 'package:dictionary/screens/about.dart';
+import 'package:dictionary/screens/detail.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -95,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                     Icons.search,
                     color: Colors.white,
                   ),
-                  hintText: "Search Word",
+                  hintText: "Search....",
                   hintStyle: TextStyle(color: Colors.white),
                 ),
               ),
@@ -173,9 +174,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               ListTile(
-                title: const Text('Dictionary'),
+                title: const Text('Home'),
                 leading: const Icon(
-                  Icons.book,
+                  Icons.home,
                   color: Colors.teal,
                 ),
                 onTap: () => {
@@ -231,10 +232,13 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 title: const Text('About'),
                 leading: const Icon(Icons.info, color: Colors.green),
-                onTap: () {
+                onTap: () => {
                   // Update the state of the app
-                  // Then close the drawer
-                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => AboutPage(),
+                    ),
+                  ) //: Navigator.pop(context)
                 },
               ),
             ],
