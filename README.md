@@ -14,5 +14,5 @@ Windows: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/e2b_dic
 
 
 ###Credits & Tools:  
-- Json Db: @MinhasKamal https://github.com/MinhasKamal/BengaliDictionary  
+- Json Db: https://github.com/MinhasKamal/BengaliDictionary  
 - Flutter: https://flutter.dev/
