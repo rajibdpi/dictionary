@@ -11,3 +11,9 @@ Online Demo links: https://rajibdpi.github.io/dictionary
 Web: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/web_v1.0.2.zip  
 Android: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/e2b_dictionary_v1.0.2.apk  
 Windows: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/e2b_dictionary_v1.0.2.exe  
+
+
+###Credits
+Db:
+Flutter:
+Github: 
