@@ -13,7 +13,7 @@ Android: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/e2b_dic
 Windows: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/e2b_dictionary_v1.0.2.exe  
 
 
-###Credits
-Db:
-Flutter:
-Github: 
+###Credits  
+Db:  
+Flutter:   
+Github:   
