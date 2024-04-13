@@ -91,6 +91,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: !isSearching
             ? const Text('E2B Dictionary')
             : TextField(
@@ -107,13 +109,12 @@ class _HomePageState extends State<HomePage> {
                   hintStyle: TextStyle(color: Colors.white),
                 ),
               ),
-        // title: Center(
-        //   child: Text(widget.title),
-        // ),
+        backgroundColor: Colors.teal,
         actions: <Widget>[
           isSearching
               ? IconButton(
                   icon: const Icon(Icons.cancel),
+                  color: Colors.white,
                   onPressed: () {
                     setState(() {
                       isSearching = false;
@@ -123,6 +124,7 @@ class _HomePageState extends State<HomePage> {
                 )
               : IconButton(
                   icon: const Icon(Icons.search),
+                  color: Colors.white,
                   onPressed: () {
                     setState(() {
                       isSearching = true;
