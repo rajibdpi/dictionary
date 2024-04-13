@@ -45,7 +45,7 @@ class _WordDetailsState extends State<WordDetails> {
       body: Center(
         child: Center(
           child: Text(
-            widget.worden + '\n' + widget.wordbn,
+            '${widget.worden}\n${widget.wordbn}',
             style: const TextStyle(color: Colors.teal),
           ),
         ),
