@@ -93,6 +93,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
         iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Colors.teal,
         title: !isSearching
             ? const Text('E2B Dictionary')
             : TextField(
@@ -109,7 +110,6 @@ class _HomePageState extends State<HomePage> {
                   hintStyle: TextStyle(color: Colors.white),
                 ),
               ),
-        backgroundColor: Colors.teal,
         actions: <Widget>[
           isSearching
               ? IconButton(

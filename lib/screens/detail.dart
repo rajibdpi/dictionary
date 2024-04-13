@@ -17,6 +17,9 @@ class _WordDetailsState extends State<WordDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Colors.teal,
         actions: [
           IconButton(
             onPressed: () {
@@ -37,7 +40,7 @@ class _WordDetailsState extends State<WordDetails> {
             icon: const Icon(Icons.volume_up),
           ),
         ],
-        title: null,
+        title: const Text('E2B Dictionary'),
       ),
       body: Center(
         child: Center(
