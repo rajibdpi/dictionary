@@ -59,10 +59,17 @@ class _HomePageState extends State<HomePage> {
       filteredItems = data;
     } else {
       filteredItems = data
-          .where((word) => word['en']
-              .toString()
-              .toLowerCase()
-              .contains(enteredKeyword.toLowerCase()))
+          .where(
+            (word) =>
+                word['en']
+                    .toString()
+                    .toLowerCase()
+                    .contains(enteredKeyword.toLowerCase()) ||
+                word['bn']
+                    .toString()
+                    .toLowerCase()
+                    .contains(enteredKeyword.toLowerCase()),
+          )
           .toList();
       // we use the toLowerCase() method to make it case-insensitive
     }
