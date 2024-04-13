@@ -1,4 +1,4 @@
-# dictionary
+# Dictionary
 
 A new Flutter project.
 
