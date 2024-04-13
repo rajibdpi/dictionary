@@ -1,18 +1,16 @@
-# English<=>Bangla Dictionary
+# dictionary
 
-A Flutter Based English<=>Bangla Dictionary project.
-E2B is an English<=>Bangla Dictionary. Getting Started This project is a starting point for the Bangladeshi People and want learn English to Bengali and Bengali to English. 
+A new Flutter project.
 
+## Getting Started
 
-## A few resources to get you started if you interested to contribute this project:
+This project is a starting point for a Flutter application.
 
-### Getting Started  
-Online Demo links: https://rajibdpi.github.io/dictionary   
-Web: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/web_v1.0.2.zip  
-Android: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/e2b_dictionary_v1.0.2.apk  
-Windows: https://github.com/rajibdpi/dictionary/releases/download/v1.0.2/e2b_dictionary_v1.0.2.exe  
+A few resources to get you started if this is your first Flutter project:
 
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-###Credits & Tools:  
-- Json Db: https://github.com/MinhasKamal/BengaliDictionary  
-- Flutter: https://flutter.dev/
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
