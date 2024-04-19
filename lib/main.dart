@@ -170,8 +170,9 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 final word = filteredWords[index];
                 return ListTile(
-                  leading: ClipOval(
-                    child: Text(word['en'][0]),
+                  leading: Text(
+                    word['en'][0],
+                    style: const TextStyle(fontSize: 14),
                   ),
                   trailing: Row(
                     mainAxisSize:
@@ -208,7 +209,7 @@ class _HomePageState extends State<HomePage> {
                   title: Text(
                     word['en'],
                   ),
-                  subtitle: Text('\$${word['en']}\n${word['bn']}'),
+                  subtitle: Text('${word['bn']}'),
                   isThreeLine: false,
                   hoverColor: Colors.teal.shade50,
                   mouseCursor: MaterialStateMouseCursor.clickable,
