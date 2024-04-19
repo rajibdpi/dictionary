@@ -28,8 +28,9 @@ class WordPage extends StatefulWidget {
 
 class _WordPageState extends State<WordPage> {
   late List<Word> allWords;
-  late List<Word> _filteredWords = [];
+  late List<Word> filteredWords = [];
   bool _isLoading = true; // Track loading state
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _WordPageState extends State<WordPage> {
         final List<dynamic> data = jsonData;
         setState(() {
           allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
-          _filteredWords = allWords;
+          filteredWords = allWords;
           _isLoading = false;
         });
       } else {
@@ -61,9 +62,16 @@ class _WordPageState extends State<WordPage> {
     }
   }
 
-  void filterWords(String query) {
+  void searchWords(String query) {
+    // setState(() {
+    //   filteredWords = allWords
+    //       .where((word) =>
+    //           word.en.toLowerCase() == query.toLowerCase() ||
+    //           word.bn.toLowerCase() == query.toLowerCase())
+    //       .toList();
+    // });
     setState(() {
-      _filteredWords = allWords
+      filteredWords = allWords
           .where((word) =>
               word.en.toLowerCase().contains(query.toLowerCase()) ||
               word.bn.toLowerCase().contains(query.toLowerCase()))
@@ -90,10 +98,19 @@ class _WordPageState extends State<WordPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: filterWords,
-              decoration: const InputDecoration(
+              onChanged: searchWords,
+              controller:
+                  searchController, // Assign the controller to the TextField
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                    onPressed: () {
+                      searchController.clear();
+                      searchWords('');
+                    },
+                    icon: const Icon(Icons.clear)),
                 labelText: 'Search-খুঁজুন',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
             ),
           ),
@@ -108,9 +125,9 @@ class _WordPageState extends State<WordPage> {
                     ],
                   ) // Show loading indicator
                 : ListView.builder(
-                    itemCount: _filteredWords.length,
+                    itemCount: filteredWords.length,
                     itemBuilder: (context, index) {
-                      final word = _filteredWords[index];
+                      final word = filteredWords[index];
                       return ListTile(
                         title: Text(
                           '${word.en} - ${word.bn}',
