@@ -142,8 +142,8 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: searchController,
-              onChanged: (value) {
-                filterWords(value);
+              onChanged: (searchKeyword) {
+                filterWords(searchKeyword);
               },
               decoration: InputDecoration(
                 labelText: 'Search',
