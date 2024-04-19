@@ -29,6 +29,7 @@ class WordPage extends StatefulWidget {
 class _WordPageState extends State<WordPage> {
   late List<Word> allWords;
   late List<Word> _filteredWords = [];
+  bool _isLoading = true; // Track loading state
 
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _WordPageState extends State<WordPage> {
         setState(() {
           allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
           _filteredWords = allWords;
+          _isLoading = false;
         });
       } else {
         throw Exception('Invalid JSON format');
@@ -96,39 +98,51 @@ class _WordPageState extends State<WordPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _filteredWords.length,
-              itemBuilder: (context, index) {
-                final word = _filteredWords[index];
-                return ListTile(
-                  title: Text(
-                    '${word.en} - ${word.bn}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: _isLoading
+                ? const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (word.pron.isNotEmpty)
-                        Text('Pronunciation: ${word.pron.join(", ")}'),
-                      if (word.bnSyns.isNotEmpty)
-                        Text('Bengali Synonyms: ${word.bnSyns.join(", ")}'),
-                      if (word.enSyns.isNotEmpty)
-                        Text('English Synonyms: ${word.enSyns.join(", ")}'),
-                      if (word.sents.isNotEmpty)
-                        Column(
+                      CircularProgressIndicator(), // Show loading indicator
+                      SizedBox(height: 16),
+                      Text('Loading...'), // Show loading label
+                    ],
+                  ) // Show loading indicator
+                : ListView.builder(
+                    itemCount: _filteredWords.length,
+                    itemBuilder: (context, index) {
+                      final word = _filteredWords[index];
+                      return ListTile(
+                        title: Text(
+                          '${word.en} - ${word.bn}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Example Sentences:',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            ...word.sents
-                                .map((sent) => Text('- ${sent ?? ""}')),
+                            if (word.pron.isNotEmpty)
+                              Text('Pronunciation: ${word.pron.join(", ")}'),
+                            if (word.bnSyns.isNotEmpty)
+                              Text(
+                                  'Bengali Synonyms: ${word.bnSyns.join(", ")}'),
+                            if (word.enSyns.isNotEmpty)
+                              Text(
+                                  'English Synonyms: ${word.enSyns.join(", ")}'),
+                            if (word.sents.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Example Sentences:',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  ...word.sents
+                                      .map((sent) => Text('- ${sent ?? ""}')),
+                                ],
+                              ),
                           ],
                         ),
-                    ],
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
