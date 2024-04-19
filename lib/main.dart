@@ -172,39 +172,11 @@ class _HomePageState extends State<HomePage> {
                 return ListTile(
                   leading: Text(
                     word['en'][0],
-                    style: const TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  trailing: Row(
-                    mainAxisSize:
-                        MainAxisSize.min, // To restrict the width of the row
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) =>
-                          //         wordEditPage(word: word),
-                          //   ),
-                          // );
-                        },
-                        icon: const Icon(Icons.edit_document),
-                      ),
-                      const SizedBox(
-                        width: 04,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          // showDialogMessage(context, word.name,
-                          //     'Do you want to delete ${word.name}?');
-                        },
-                        icon: const Icon(Icons.delete),
-                        style: const ButtonStyle(
-                            iconColor: MaterialStatePropertyAll(Colors.red)),
-                      ),
-                      const SizedBox(
-                        width: 04,
-                      ),
-                    ],
+                  trailing: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.favorite_border_outlined),
                   ),
                   title: Text(
                     word['en'],
