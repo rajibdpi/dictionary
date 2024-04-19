@@ -59,7 +59,7 @@ class _WordPageState extends State<WordPage> {
     }
   }
 
-  void _filterWords(String query) {
+  void filterWords(String query) {
     setState(() {
       _filteredWords = _allWords
           .where((word) =>
@@ -88,7 +88,7 @@ class _WordPageState extends State<WordPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: _filterWords,
+              onChanged: filterWords,
               decoration: const InputDecoration(
                 labelText: 'Search-খুঁজুন',
                 border: OutlineInputBorder(),
