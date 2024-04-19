@@ -110,6 +110,13 @@ class _WordPageState extends State<WordPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('E2B Dictionary'),
+        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.search),
+          )
+        ],
         backgroundColor: Colors.teal,
       ),
       body: Column(
