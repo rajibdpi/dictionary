@@ -1,328 +1,159 @@
-import 'package:dictionary/screens/about.dart';
-import 'package:dictionary/screens/detail.dart';
-import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Word {
+  final String en;
+  final String bn;
+  final List<String> pron;
+  final List<String> bnSyns;
+  final List<String> enSyns;
+  final List<String> sents;
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'E2B Dictionary',
-      theme: ThemeData(
-        // This is the theme of the application.
-        primarySwatch: Colors.teal,
-      ),
-      home: const HomePage(
-        title: 'E2B Dictionary',
-      ),
+  Word({
+    required this.en,
+    required this.bn,
+    required this.pron,
+    required this.bnSyns,
+    required this.enSyns,
+    required this.sents,
+  });
+
+  factory Word.fromJson(Map<String, dynamic> json) {
+    return Word(
+      en: json['en'] ?? '',
+      bn: json['bn'] ?? '',
+      pron: (json['pron'] != null && json['pron'] is List)
+          ? List<String>.from(json['pron'].map((item) => item.toString()))
+          : [],
+      bnSyns: (json['bn_syns'] != null && json['bn_syns'] is List)
+          ? List<String>.from(json['bn_syns']!)
+          : [],
+      enSyns: (json['en_syns'] != null && json['en_syns'] is List)
+          ? List<String>.from(json['en_syns']!)
+          : [],
+      sents: (json['sents'] != null && json['sents'] is List)
+          ? List<String>.from(json['sents']!)
+          : [],
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+class MyApp extends StatelessWidget {
   @override
-  State<HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'E2B Dictionary',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: WordPage(),
+    );
+  }
 }
 
-class _HomePageState extends State<HomePage> {
-  late List words = []; // Initialize words as an empty list
-  late List filteredWords = [];
-  TextEditingController searchController = TextEditingController();
-  bool isSearching = false;
+class WordPage extends StatefulWidget {
+  @override
+  _WordPageState createState() => _WordPageState();
+}
+
+class _WordPageState extends State<WordPage> {
+  late List<Word> _allWords;
+  late List<Word> _filteredWords = [];
 
   @override
   void initState() {
     super.initState();
-    // Fetch data and update words list
-    readJson();
-    words = words;
+    _fetchWords();
   }
 
-  // Fetch content from the json file
-  Future<void> readJson() async {
-    final jsonResponse = await rootBundle.loadString('assets/E2Bdatabase.json');
-    var jsonData = json.decode(jsonResponse);
-    // print(jsonData);
-    setState(() {
-      words = jsonData['words'];
-    });
-    // return 'Success';
-  }
+  Future<void> _fetchWords() async {
+    final response = await http.get(
+      Uri.parse(
+        'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json',
+      ),
+    );
 
-// Filter or Search option
-  void filterWords(String enteredKeyword) {
-    if (enteredKeyword.isNotEmpty) {
-      List<Map> searchWords = [];
-      words.forEach((word) {
-        if (word['en']
-                .toString()
-                .toLowerCase()
-                .contains(enteredKeyword.toLowerCase()) ||
-            word['bn']
-                .toString()
-                .toLowerCase()
-                .contains(enteredKeyword.toLowerCase())) {
-          searchWords.add(word);
-        }
-      });
-      // if the search field is empty or only contains white-space, we'll display all users
-      setState(
-        () {
-          filteredWords = searchWords;
-        },
-      );
-    } else {
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body)['words'];
       setState(() {
-        filteredWords = words; // Assign original list when query is empty
+        _allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
+        _filteredWords = _allWords;
       });
+    } else {
+      throw Exception('Failed to load words');
     }
+  }
+
+  void _filterWords(String query) {
+    setState(() {
+      _filteredWords = _allWords
+          .where((word) =>
+              word.en.toLowerCase().contains(query.toLowerCase()) ||
+              word.bn.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: !isSearching
-            ? const Text('E2B Dictionary')
-            : TextField(
-                onChanged: (value) {
-                  filterWords(value);
-                },
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  icon: Icon(
-                    Icons.search,
-                    color: Colors.white,
-                  ),
-                  hintText: "Search....",
-                  hintStyle: TextStyle(color: Colors.white),
-                ),
-              ),
+        title: const Text('E2B Dictionary'),
         backgroundColor: Colors.teal,
-        actions: <Widget>[
-          isSearching
-              ? IconButton(
-                  icon: const Icon(Icons.cancel),
-                  color: Colors.white,
-                  onPressed: () {
-                    setState(() {
-                      isSearching = false;
-                      filteredWords = words;
-                    });
-                  },
-                )
-              : IconButton(
-                  icon: const Icon(Icons.search),
-                  color: Colors.white,
-                  onPressed: () {
-                    setState(() {
-                      isSearching = true;
-                    });
-                  },
-                )
-        ],
       ),
       body: Column(
-        children: <Widget>[
+        children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              controller: searchController,
-              onChanged: (searchKeyword) {
-                filterWords(searchKeyword);
-              },
-              decoration: InputDecoration(
-                labelText: 'Search',
-                hintText: 'Search words...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    searchController.clear();
-                    filterWords('');
-                  },
-                  icon: const Icon(Icons.clear),
-                ),
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(25.0),
-                  ),
-                ),
+              onChanged: _filterWords,
+              decoration: const InputDecoration(
+                labelText: 'Search-খুঁজুন',
+                border: OutlineInputBorder(),
               ),
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredWords.length,
+              itemCount: _filteredWords.length,
               itemBuilder: (context, index) {
-                final word = filteredWords[index];
+                final word = _filteredWords[index];
                 return ListTile(
-                  leading: Text(
-                    word['en'][0],
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.favorite_border_outlined),
-                  ),
                   title: Text(
-                    word['en'],
+                    '${word.en} - ${word.bn}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text('${word['bn']}'),
-                  isThreeLine: false,
-                  hoverColor: Colors.teal.shade50,
-                  mouseCursor: MaterialStateMouseCursor.clickable,
-                  selectedTileColor: Colors.brown,
-                  onTap: () async {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WordDetails(
-                            worden: words[index]['en'],
-                            wordbn: words[index]['bn'],
-                          ),
-                        ));
-                  },
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (word.pron.isNotEmpty)
+                        Text('Pronunciation: ${word.pron.join(", ")}'),
+                      if (word.bnSyns.isNotEmpty)
+                        Text('Bengali Synonyms: ${word.bnSyns.join(", ")}'),
+                      if (word.enSyns.isNotEmpty)
+                        Text('English Synonyms: ${word.enSyns.join(", ")}'),
+                      if (word.sents.isNotEmpty)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Example Sentences:',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            ...word.sents
+                                .map((sent) => Text('- ${sent ?? ""}')),
+                          ],
+                        ),
+                    ],
+                  ),
                 );
               },
             ),
           ),
         ],
-      ),
-
-      // Container(
-      //   padding: const EdgeInsets.all(10),
-      //   child: words.isNotEmpty
-      //       ? ListView.builder(
-      //           itemCount: words.length,
-      //           itemBuilder: (BuildContext context, int index) {
-      //             return Column(
-      //               children: [
-      //                 ListTile(
-      //                   leading: CircleAvatar(
-      //                     child: Text(
-      //                         words[index]['en'][0].toString().toUpperCase()),
-      //                   ),
-      //                   title: Text(words[index]['en']),
-      //                   subtitle: Text(words[index]['bn']),
-      //                   onTap: () async {
-      //                     // print(data[index]);
-      //                     Navigator.push(
-      //                       context,
-      //                       MaterialPageRoute(
-      //                         builder: (context) => WordDetails(
-      //                           worden: words[index]['en'],
-      //                           wordbn: words[index]['bn'],
-      //                         ),
-      //                       ),
-      //                     );
-      //                   },
-      //                 ),
-      //               ],
-      //             );
-      //           },
-      //         )
-      //       : const Center(
-      //           child: CircularProgressIndicator(),
-      //         ),
-      // ),
-      drawer: Padding(
-        padding: const EdgeInsets.all(0),
-        child: Drawer(
-          child: ListView(
-            children: [
-              const UserAccountsDrawerHeader(
-                accountName: Text('Rajib Ahmed'),
-                accountEmail: Text('rajibdpi@gmail.com'),
-                currentAccountPicture: CircleAvatar(
-                  radius: 50.0,
-                  backgroundImage: AssetImage("assets/images/user.jpg"),
-                ),
-              ),
-              ListTile(
-                title: const Text('Home'),
-                leading: const Icon(
-                  Icons.home,
-                  color: Colors.teal,
-                ),
-                onTap: () => {
-                  // Then close the drawer
-                  // Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(
-                        title: 'E2B Dictionary',
-                      ),
-                    ),
-                  ),
-                },
-              ),
-              ListTile(
-                title: const Text('Recent Search'),
-                leading: const Icon(Icons.history, color: Colors.blue),
-                onTap: () => {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(
-                        title: 'E2B Dictionary',
-                      ),
-                    ),
-                  ),
-                },
-              ),
-              ListTile(
-                title: const Text('Favourites'),
-                leading: const Icon(Icons.heart_broken, color: Colors.red),
-                onTap: () => {
-                  // Update the state of the app
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(
-                        title: 'E2B Dictionary',
-                      ),
-                    ),
-                  ),
-                  // Then close the drawer
-                  // Navigator.pop(context),
-                },
-              ),
-              ListTile(
-                title: const Text('Add New Word'),
-                leading: const Icon(Icons.edit, color: Colors.blue),
-                onTap: () {
-                  // Update the state of the app
-                  // Then close the drawer
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text('About'),
-                leading: const Icon(Icons.info, color: Colors.green),
-                onTap: () => {
-                  // Update the state of the app
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => AboutPage(),
-                    ),
-                  ) //: Navigator.pop(context)
-                },
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
