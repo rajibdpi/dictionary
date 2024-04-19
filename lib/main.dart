@@ -27,7 +27,7 @@ class WordPage extends StatefulWidget {
 }
 
 class _WordPageState extends State<WordPage> {
-  late List<Word> _allWords;
+  late List<Word> allWords;
   late List<Word> _filteredWords = [];
 
   @override
@@ -48,8 +48,8 @@ class _WordPageState extends State<WordPage> {
       if (jsonData != null) {
         final List<dynamic> data = jsonData;
         setState(() {
-          _allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
-          _filteredWords = _allWords;
+          allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
+          _filteredWords = allWords;
         });
       } else {
         throw Exception('Invalid JSON format');
@@ -61,7 +61,7 @@ class _WordPageState extends State<WordPage> {
 
   void filterWords(String query) {
     setState(() {
-      _filteredWords = _allWords
+      _filteredWords = allWords
           .where((word) =>
               word.en.toLowerCase().contains(query.toLowerCase()) ||
               word.bn.toLowerCase().contains(query.toLowerCase()))
