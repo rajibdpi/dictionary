@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'E2B Dictionary',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -79,11 +80,16 @@ class _WordPageState extends State<WordPage> {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body)['words'];
-      setState(() {
-        _allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
-        _filteredWords = _allWords;
-      });
+      final List<dynamic>? jsonData = jsonDecode(response.body);
+      if (jsonData != null) {
+        final List<dynamic> data = jsonData;
+        setState(() {
+          _allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
+          _filteredWords = _allWords;
+        });
+      } else {
+        throw Exception('Invalid JSON format');
+      }
     } else {
       throw Exception('Failed to load words');
     }
