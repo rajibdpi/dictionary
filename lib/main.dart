@@ -37,9 +37,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List data = [];
-  List filteredItems = [];
+  late List words = []; // Initialize words as an empty list
+  late List filteredWords = [];
+  TextEditingController searchController = TextEditingController();
   bool isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data and update words list
+    readJson();
+    words = words;
+  }
 
   // Fetch content from the json file
   Future<void> readJson() async {
@@ -47,44 +56,38 @@ class _HomePageState extends State<HomePage> {
     var jsonData = json.decode(jsonResponse);
     // print(jsonData);
     setState(() {
-      data = jsonData['words'];
+      words = jsonData['words'];
     });
     // return 'Success';
   }
 
 // Filter or Search option
-  _runFilter(String enteredKeyword) {
-    if (enteredKeyword.isEmpty) {
+  void filterWords(String enteredKeyword) {
+    if (enteredKeyword.isNotEmpty) {
+      List<Map> searchWords = [];
+      words.forEach((word) {
+        if (word['en']
+                .toString()
+                .toLowerCase()
+                .contains(enteredKeyword.toLowerCase()) ||
+            word['bn']
+                .toString()
+                .toLowerCase()
+                .contains(enteredKeyword.toLowerCase())) {
+          searchWords.add(word);
+        }
+      });
       // if the search field is empty or only contains white-space, we'll display all users
-      filteredItems = data;
+      setState(
+        () {
+          filteredWords = searchWords;
+        },
+      );
     } else {
-      filteredItems = data
-          .where(
-            (word) =>
-                word['en']
-                    .toString()
-                    .toLowerCase()
-                    .contains(enteredKeyword.toLowerCase()) ||
-                word['bn']
-                    .toString()
-                    .toLowerCase()
-                    .contains(enteredKeyword.toLowerCase()),
-          )
-          .toList();
-      // we use the toLowerCase() method to make it case-insensitive
+      setState(() {
+        filteredWords = words; // Assign original list when query is empty
+      });
     }
-    // Refresh the UI
-    setState(
-      () {
-        data = filteredItems;
-      },
-    );
-  }
-
-  @override
-  void initState() {
-    readJson();
-    super.initState();
   }
 
   @override
@@ -93,12 +96,11 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
         iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.teal,
         title: !isSearching
             ? const Text('E2B Dictionary')
             : TextField(
                 onChanged: (value) {
-                  _runFilter(value);
+                  filterWords(value);
                 },
                 style: const TextStyle(color: Colors.white),
                 decoration: const InputDecoration(
@@ -110,6 +112,7 @@ class _HomePageState extends State<HomePage> {
                   hintStyle: TextStyle(color: Colors.white),
                 ),
               ),
+        backgroundColor: Colors.teal,
         actions: <Widget>[
           isSearching
               ? IconButton(
@@ -118,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () {
                     setState(() {
                       isSearching = false;
-                      filteredItems = data;
+                      filteredWords = words;
                     });
                   },
                 )
@@ -133,42 +136,136 @@ class _HomePageState extends State<HomePage> {
                 )
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: data.isNotEmpty
-            ? ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              onChanged: (value) {
+                filterWords(value);
+              },
+              decoration: InputDecoration(
+                labelText: 'Search',
+                hintText: 'Search words...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    searchController.clear();
+                    filterWords('');
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(25.0),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredWords.length,
+              itemBuilder: (context, index) {
+                final word = filteredWords[index];
+                return ListTile(
+                  leading: ClipOval(
+                    child: Text(word['en'][0]),
+                  ),
+                  trailing: Row(
+                    mainAxisSize:
+                        MainAxisSize.min, // To restrict the width of the row
                     children: [
-                      ListTile(
-                        leading: CircleAvatar(
-                          child: Text(
-                              data[index]['en'][0].toString().toUpperCase()),
-                        ),
-                        title: Text(data[index]['en']),
-                        subtitle: Text(data[index]['bn']),
-                        onTap: () async {
-                          // print(data[index]);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WordDetails(
-                                worden: data[index]['en'],
-                                wordbn: data[index]['bn'],
-                              ),
-                            ),
-                          );
+                      IconButton(
+                        onPressed: () {
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) =>
+                          //         wordEditPage(word: word),
+                          //   ),
+                          // );
                         },
+                        icon: const Icon(Icons.edit_document),
+                      ),
+                      const SizedBox(
+                        width: 04,
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          // showDialogMessage(context, word.name,
+                          //     'Do you want to delete ${word.name}?');
+                        },
+                        icon: const Icon(Icons.delete),
+                        style: const ButtonStyle(
+                            iconColor: MaterialStatePropertyAll(Colors.red)),
+                      ),
+                      const SizedBox(
+                        width: 04,
                       ),
                     ],
-                  );
-                },
-              )
-            : const Center(
-                child: CircularProgressIndicator(),
-              ),
+                  ),
+                  title: Text(
+                    word['en'],
+                  ),
+                  subtitle: Text('\$${word['en']}\n${word['bn']}'),
+                  isThreeLine: false,
+                  hoverColor: Colors.teal.shade50,
+                  mouseCursor: MaterialStateMouseCursor.clickable,
+                  selectedTileColor: Colors.brown,
+                  onTap: () async {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WordDetails(
+                            worden: words[index]['en'],
+                            wordbn: words[index]['bn'],
+                          ),
+                        ));
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
+
+      // Container(
+      //   padding: const EdgeInsets.all(10),
+      //   child: words.isNotEmpty
+      //       ? ListView.builder(
+      //           itemCount: words.length,
+      //           itemBuilder: (BuildContext context, int index) {
+      //             return Column(
+      //               children: [
+      //                 ListTile(
+      //                   leading: CircleAvatar(
+      //                     child: Text(
+      //                         words[index]['en'][0].toString().toUpperCase()),
+      //                   ),
+      //                   title: Text(words[index]['en']),
+      //                   subtitle: Text(words[index]['bn']),
+      //                   onTap: () async {
+      //                     // print(data[index]);
+      //                     Navigator.push(
+      //                       context,
+      //                       MaterialPageRoute(
+      //                         builder: (context) => WordDetails(
+      //                           worden: words[index]['en'],
+      //                           wordbn: words[index]['bn'],
+      //                         ),
+      //                       ),
+      //                     );
+      //                   },
+      //                 ),
+      //               ],
+      //             );
+      //           },
+      //         )
+      //       : const Center(
+      //           child: CircularProgressIndicator(),
+      //         ),
+      // ),
       drawer: Padding(
         padding: const EdgeInsets.all(0),
         child: Drawer(
