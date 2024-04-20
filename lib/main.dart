@@ -16,12 +16,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
-      home: WordPage(),
+      home: const WordPage(),
     );
   }
 }
 
 class WordPage extends StatefulWidget {
+  const WordPage({super.key});
+
   @override
   _WordPageState createState() => _WordPageState();
 }
@@ -29,16 +31,16 @@ class WordPage extends StatefulWidget {
 class _WordPageState extends State<WordPage> {
   late List<Word> allWords;
   late List<Word> filteredWords = [];
-  bool _isLoading = true; // Track loading state
+  bool isLoading = true; // Track loading state
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchWords();
+    fetchWords();
   }
 
-  Future<void> _fetchWords() async {
+  Future<void> fetchWords() async {
     final response = await http.get(
       Uri.parse(
         'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json',
@@ -52,7 +54,7 @@ class _WordPageState extends State<WordPage> {
         setState(() {
           allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
           filteredWords = allWords;
-          _isLoading = false;
+          isLoading = false;
         });
       } else {
         throw Exception('Invalid JSON format');
@@ -63,13 +65,6 @@ class _WordPageState extends State<WordPage> {
   }
 
   void searchWords(String query) {
-    // setState(() {
-    //   filteredWords = allWords
-    //       .where((word) =>
-    //           word.en.toLowerCase() == query.toLowerCase() ||
-    //           word.bn.toLowerCase() == query.toLowerCase())
-    //       .toList();
-    // });
     setState(() {
       filteredWords = allWords
           .where((word) =>
@@ -115,7 +110,7 @@ class _WordPageState extends State<WordPage> {
             ),
           ),
           Expanded(
-            child: _isLoading
+            child: isLoading
                 ? const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
