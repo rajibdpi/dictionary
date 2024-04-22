@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dictionary/models/word.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class WordPage extends StatefulWidget {
-  const WordPage({super.key});
+  const WordPage({Key? key}) : super(key: key);
 
   @override
   _WordPageState createState() => _WordPageState();
@@ -37,30 +39,49 @@ class _WordPageState extends State<WordPage> {
   @override
   void initState() {
     super.initState();
-    fetchWords();
+    loadWords();
   }
 
-  Future<void> fetchWords() async {
-    final response = await http.get(
-      Uri.parse(
-        'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json',
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic>? jsonData = jsonDecode(response.body);
-      if (jsonData != null) {
-        final List<dynamic> data = jsonData;
+  Future<void> loadWords() async {
+    try {
+      // Check if the JSON file exists locally
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/BengaliDictionary.json');
+      print(directory.path);
+      if (await file.exists()) {
+        // If the file exists locally, load data from it
+        final jsonString = await file.readAsString();
+        final List<dynamic> jsonData = jsonDecode(jsonString);
         setState(() {
-          allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
+          allWords =
+              jsonData.map((wordJson) => Word.fromJson(wordJson)).toList();
           filteredWords = allWords;
           isLoading = false;
         });
       } else {
-        throw Exception('Invalid JSON format');
+        // If the file doesn't exist, fetch data from the network and save it locally
+        final response = await http.get(Uri.parse(
+            'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json'));
+        if (response.statusCode == 200) {
+          final jsonString = response.body;
+          final List<dynamic> jsonData = jsonDecode(jsonString);
+          setState(() {
+            allWords =
+                jsonData.map((wordJson) => Word.fromJson(wordJson)).toList();
+            filteredWords = allWords;
+            isLoading = false;
+          });
+          // Save JSON data locally with a custom file name
+          await File('${directory.path}/BengaliDictionary.json')
+              .writeAsString(jsonString);
+          print(jsonString);
+        } else {
+          throw Exception('Failed to load words');
+        }
       }
-    } else {
-      throw Exception('Failed to load words');
+    } catch (e) {
+      print('Error loading JSON: $e');
+      // Handle error
     }
   }
 
@@ -94,16 +115,16 @@ class _WordPageState extends State<WordPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: searchWords,
-              controller:
-                  searchController, // Assign the controller to the TextField
+              controller: searchController,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
-                    onPressed: () {
-                      searchController.clear();
-                      searchWords('');
-                    },
-                    icon: const Icon(Icons.clear)),
+                  onPressed: () {
+                    searchController.clear();
+                    searchWords('');
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
                 labelText: 'Search-খুঁজুন',
                 border: const OutlineInputBorder(),
               ),
@@ -111,14 +132,9 @@ class _WordPageState extends State<WordPage> {
           ),
           Expanded(
             child: isLoading
-                ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(), // Show loading indicator
-                      SizedBox(height: 16),
-                      Text('Loading...'), // Show loading label
-                    ],
-                  ) // Show loading indicator
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
                 : ListView.builder(
                     itemCount: filteredWords.length,
                     itemBuilder: (context, index) {
