@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
+  final lastModifiedTime = await lastUpdatedOnlineFile();
+  print('Last modified time: $lastModifiedTime');
   runApp(MyApp());
 }
 
@@ -50,7 +52,7 @@ class _WordPageState extends State<WordPage> {
       // Check if the JSON file exists locally
       final directory = await getApplicationDocumentsDirectory();
       final file = File('${directory.path}/BengaliDictionary.json');
-      print(file);
+      // print(file);
       if (await file.exists()) {
         // If the file exists locally, load data from it
         final jsonString = await file.readAsString();
