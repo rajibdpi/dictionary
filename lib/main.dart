@@ -37,12 +37,14 @@ class _WordPageState extends State<WordPage> {
   late List<Word> filteredWords = [];
   late String updateAtDateTime;
   bool isLoading = true; // Track loading state
+  bool isSearchBarOpen = false;
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     loadWords();
+    // isSearchBarOpen = !isSearchBarOpen;
   }
 
   Future<void> loadWords() async {
@@ -98,6 +100,116 @@ class _WordPageState extends State<WordPage> {
     });
   }
 
+  Widget withSearchBar() {
+    return Column(
+      children: [
+        TextField(
+          onChanged: searchWords,
+          controller: searchController,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.search),
+            suffixIcon: IconButton(
+              onPressed: () {
+                searchController.clear();
+                searchWords('');
+              },
+              icon: const Icon(Icons.clear),
+            ),
+            labelText: 'Search-খুঁজুন',
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        Expanded(
+          child: isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  itemCount: filteredWords.length,
+                  itemBuilder: (context, index) {
+                    final word = filteredWords[index];
+                    return ListTile(
+                      title: Text(
+                        '${word.en} - ${word.bn}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (word.pron.isNotEmpty)
+                            Text('Pronunciation: ${word.pron.join(", ")}'),
+                          if (word.bnSyns.isNotEmpty)
+                            Text('Bengali Synonyms: ${word.bnSyns.join(", ")}'),
+                          if (word.enSyns.isNotEmpty)
+                            Text('English Synonyms: ${word.enSyns.join(", ")}'),
+                          if (word.sents.isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Example Sentences:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                ...word.sents
+                                    .map((sent) => Text('- ${sent ?? ""}')),
+                              ],
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget withOutSearchBar() {
+    return Column(
+      children: [
+        Expanded(
+          child: isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  itemCount: filteredWords.length,
+                  itemBuilder: (context, index) {
+                    final word = filteredWords[index];
+                    return ListTile(
+                      title: Text(
+                        '${word.en} - ${word.bn}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (word.pron.isNotEmpty)
+                            Text('Pronunciation: ${word.pron.join(", ")}'),
+                          if (word.bnSyns.isNotEmpty)
+                            Text('Bengali Synonyms: ${word.bnSyns.join(", ")}'),
+                          if (word.enSyns.isNotEmpty)
+                            Text('English Synonyms: ${word.enSyns.join(", ")}'),
+                          if (word.sents.isNotEmpty)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Example Sentences:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                ...word.sents
+                                    .map((sent) => Text('- ${sent ?? ""}')),
+                              ],
+                            ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +218,11 @@ class _WordPageState extends State<WordPage> {
         // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                isSearchBarOpen = !isSearchBarOpen;
+              });
+            },
             icon: const Icon(Icons.search),
           )
         ],
@@ -169,70 +285,14 @@ class _WordPageState extends State<WordPage> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: searchWords,
-              controller: searchController,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    searchController.clear();
-                    searchWords('');
-                  },
-                  icon: const Icon(Icons.clear),
-                ),
-                labelText: 'Search-খুঁজুন',
-                border: const OutlineInputBorder(),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: isSearchBarOpen
+            ? withSearchBar()
+            : Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: withOutSearchBar(),
               ),
-            ),
-          ),
-          Expanded(
-            child: isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : ListView.builder(
-                    itemCount: filteredWords.length,
-                    itemBuilder: (context, index) {
-                      final word = filteredWords[index];
-                      return ListTile(
-                        title: Text(
-                          '${word.en} - ${word.bn}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (word.pron.isNotEmpty)
-                              Text('Pronunciation: ${word.pron.join(", ")}'),
-                            if (word.bnSyns.isNotEmpty)
-                              Text(
-                                  'Bengali Synonyms: ${word.bnSyns.join(", ")}'),
-                            if (word.enSyns.isNotEmpty)
-                              Text(
-                                  'English Synonyms: ${word.enSyns.join(", ")}'),
-                            if (word.sents.isNotEmpty)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Example Sentences:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  ...word.sents
-                                      .map((sent) => Text('- ${sent ?? ""}')),
-                                ],
-                              ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
       ),
     );
   }
