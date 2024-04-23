@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dictionary/models/word.dart';
+import 'package:dictionary/screens/about.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -33,6 +34,7 @@ class WordPage extends StatefulWidget {
 class _WordPageState extends State<WordPage> {
   late List<Word> allWords;
   late List<Word> filteredWords = [];
+  late String updateAtDateTime;
   bool isLoading = true; // Track loading state
   TextEditingController searchController = TextEditingController();
 
@@ -47,7 +49,7 @@ class _WordPageState extends State<WordPage> {
       // Check if the JSON file exists locally
       final directory = await getApplicationDocumentsDirectory();
       final file = File('${directory.path}/BengaliDictionary.json');
-      print(directory.path);
+      print(file);
       if (await file.exists()) {
         // If the file exists locally, load data from it
         final jsonString = await file.readAsString();
@@ -100,7 +102,7 @@ class _WordPageState extends State<WordPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('E2B Dictionary'),
-        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+        // leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
         actions: [
           IconButton(
             onPressed: () {},
@@ -173,6 +175,45 @@ class _WordPageState extends State<WordPage> {
                   ),
           ),
         ],
+      ),
+      drawer: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Text(
+                  'Drawer Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.update),
+                title: const Text('Last Update'),
+                onTap: () {
+                  Navigator.pop(context); // Close the drawer
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const AboutPage()));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.pop(context); // Close the drawer
+                  // Navigate to settings page or perform settings related actions
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
