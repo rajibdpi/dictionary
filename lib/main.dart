@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dictionary/components/utils.dart';
 import 'package:dictionary/models/word.dart';
 import 'package:dictionary/screens/about.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-void main() {
+Future<void> main() async {
   runApp(MyApp());
 }
 
@@ -111,6 +112,63 @@ class _WordPageState extends State<WordPage> {
         ],
         backgroundColor: Colors.teal,
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.teal,
+              ),
+              child: Text(
+                'Drawer Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.update),
+              title: const Text('Last Update'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const AboutPage()));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                // Navigate to settings page or perform settings related actions
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.update),
+              title: FutureBuilder<String>(
+                future: lastUpdatedOnlineFile(),
+                // future: lastUpdatedLocalFile(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator(
+                      semanticsLabel: 'Loading..',
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return Text('Updated at: ${snapshot.data}');
+                  }
+                },
+              ),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           Padding(
@@ -175,45 +233,6 @@ class _WordPageState extends State<WordPage> {
                   ),
           ),
         ],
-      ),
-      drawer: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Text(
-                  'Drawer Menu',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.update),
-                title: const Text('Last Update'),
-                onTap: () {
-                  Navigator.pop(context); // Close the drawer
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const AboutPage()));
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.pop(context); // Close the drawer
-                  // Navigate to settings page or perform settings related actions
-                },
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
