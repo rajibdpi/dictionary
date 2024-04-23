@@ -74,7 +74,7 @@ class _WordPageState extends State<WordPage> {
           // Save JSON data locally with a custom file name
           await File('${directory.path}/BengaliDictionary.json')
               .writeAsString(jsonString);
-          print(jsonString);
+          // print(jsonString);
         } else {
           throw Exception('Failed to load words');
         }
