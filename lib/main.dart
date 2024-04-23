@@ -2,14 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dictionary/components/utils.dart';
 import 'package:dictionary/models/word.dart';
-import 'package:dictionary/screens/about.dart';
+import 'package:dictionary/pages/about.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
-  final lastModifiedTime = await lastUpdatedOnlineFile();
-  print('Last modified time: $lastModifiedTime');
   runApp(MyApp());
 }
 
@@ -150,7 +148,7 @@ class _WordPageState extends State<WordPage> {
             ListTile(
               leading: const Icon(Icons.update),
               title: FutureBuilder<String>(
-                future: lastUpdatedOnlineFile(),
+                future: lastUpdatedLocalFile(),
                 // future: lastUpdatedLocalFile(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
