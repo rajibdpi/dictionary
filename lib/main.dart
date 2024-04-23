@@ -1,46 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:dictionary/models/word.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(MyApp());
-}
-
-class Word {
-  final String en;
-  final String bn;
-  final List<String> pron;
-  final List<String> bnSyns;
-  final List<String> enSyns;
-  final List<String> sents;
-
-  Word({
-    required this.en,
-    required this.bn,
-    required this.pron,
-    required this.bnSyns,
-    required this.enSyns,
-    required this.sents,
-  });
-
-  factory Word.fromJson(Map<String, dynamic> json) {
-    return Word(
-      en: json['en'] ?? '',
-      bn: json['bn'] ?? '',
-      pron: (json['pron'] != null && json['pron'] is List)
-          ? List<String>.from(json['pron'].map((item) => item.toString()))
-          : [],
-      bnSyns: (json['bn_syns'] != null && json['bn_syns'] is List)
-          ? List<String>.from(json['bn_syns']!)
-          : [],
-      enSyns: (json['en_syns'] != null && json['en_syns'] is List)
-          ? List<String>.from(json['en_syns']!)
-          : [],
-      sents: (json['sents'] != null && json['sents'] is List)
-          ? List<String>.from(json['sents']!)
-          : [],
-    );
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -50,54 +16,78 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'E2B Dictionary',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
-      home: WordPage(),
+      home: const WordPage(),
     );
   }
 }
 
 class WordPage extends StatefulWidget {
+  const WordPage({Key? key}) : super(key: key);
+
   @override
   _WordPageState createState() => _WordPageState();
 }
 
 class _WordPageState extends State<WordPage> {
-  late List<Word> _allWords;
-  late List<Word> _filteredWords = [];
+  late List<Word> allWords;
+  late List<Word> filteredWords = [];
+  bool isLoading = true; // Track loading state
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchWords();
+    loadWords();
   }
 
-  Future<void> _fetchWords() async {
-    final response = await http.get(
-      Uri.parse(
-        'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json',
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic>? jsonData = jsonDecode(response.body);
-      if (jsonData != null) {
-        final List<dynamic> data = jsonData;
+  Future<void> loadWords() async {
+    try {
+      // Check if the JSON file exists locally
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/BengaliDictionary.json');
+      print(directory.path);
+      if (await file.exists()) {
+        // If the file exists locally, load data from it
+        final jsonString = await file.readAsString();
+        final List<dynamic> jsonData = jsonDecode(jsonString);
         setState(() {
-          _allWords = data.map((wordJson) => Word.fromJson(wordJson)).toList();
-          _filteredWords = _allWords;
+          allWords =
+              jsonData.map((wordJson) => Word.fromJson(wordJson)).toList();
+          filteredWords = allWords;
+          isLoading = false;
         });
       } else {
-        throw Exception('Invalid JSON format');
+        // If the file doesn't exist, fetch data from the network and save it locally
+        final response = await http.get(Uri.parse(
+            'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json'));
+        if (response.statusCode == 200) {
+          final jsonString = response.body;
+          final List<dynamic> jsonData = jsonDecode(jsonString);
+          setState(() {
+            allWords =
+                jsonData.map((wordJson) => Word.fromJson(wordJson)).toList();
+            filteredWords = allWords;
+            isLoading = false;
+          });
+          // Save JSON data locally with a custom file name
+          await File('${directory.path}/BengaliDictionary.json')
+              .writeAsString(jsonString);
+          print(jsonString);
+        } else {
+          throw Exception('Failed to load words');
+        }
       }
-    } else {
-      throw Exception('Failed to load words');
+    } catch (e) {
+      print('Error loading JSON: $e');
+      // Handle error
     }
   }
 
-  void _filterWords(String query) {
+  void searchWords(String query) {
     setState(() {
-      _filteredWords = _allWords
+      filteredWords = allWords
           .where((word) =>
               word.en.toLowerCase().contains(query.toLowerCase()) ||
               word.bn.toLowerCase().contains(query.toLowerCase()))
@@ -110,6 +100,13 @@ class _WordPageState extends State<WordPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('E2B Dictionary'),
+        leading: IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.search),
+          )
+        ],
         backgroundColor: Colors.teal,
       ),
       body: Column(
@@ -117,47 +114,63 @@ class _WordPageState extends State<WordPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: _filterWords,
-              decoration: const InputDecoration(
+              onChanged: searchWords,
+              controller: searchController,
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    searchController.clear();
+                    searchWords('');
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
                 labelText: 'Search-খুঁজুন',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _filteredWords.length,
-              itemBuilder: (context, index) {
-                final word = _filteredWords[index];
-                return ListTile(
-                  title: Text(
-                    '${word.en} - ${word.bn}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (word.pron.isNotEmpty)
-                        Text('Pronunciation: ${word.pron.join(", ")}'),
-                      if (word.bnSyns.isNotEmpty)
-                        Text('Bengali Synonyms: ${word.bnSyns.join(", ")}'),
-                      if (word.enSyns.isNotEmpty)
-                        Text('English Synonyms: ${word.enSyns.join(", ")}'),
-                      if (word.sents.isNotEmpty)
-                        Column(
+            child: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ListView.builder(
+                    itemCount: filteredWords.length,
+                    itemBuilder: (context, index) {
+                      final word = filteredWords[index];
+                      return ListTile(
+                        title: Text(
+                          '${word.en} - ${word.bn}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Example Sentences:',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            ...word.sents
-                                .map((sent) => Text('- ${sent ?? ""}')),
+                            if (word.pron.isNotEmpty)
+                              Text('Pronunciation: ${word.pron.join(", ")}'),
+                            if (word.bnSyns.isNotEmpty)
+                              Text(
+                                  'Bengali Synonyms: ${word.bnSyns.join(", ")}'),
+                            if (word.enSyns.isNotEmpty)
+                              Text(
+                                  'English Synonyms: ${word.enSyns.join(", ")}'),
+                            if (word.sents.isNotEmpty)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('Example Sentences:',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  ...word.sents
+                                      .map((sent) => Text('- ${sent ?? ""}')),
+                                ],
+                              ),
                           ],
                         ),
-                    ],
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
