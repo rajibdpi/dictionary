@@ -13,6 +13,7 @@ class _AboutPageState extends State<AboutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal,
         // actions: [],
         title: const Text("About"),
       ),

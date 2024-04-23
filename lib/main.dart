@@ -65,8 +65,10 @@ class _WordPageState extends State<WordPage> {
         });
       } else {
         // If the file doesn't exist, fetch data from the network and save it locally
-        final response = await http.get(Uri.parse(
-            'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json'));
+        final response = await http.get(
+          Uri.parse(
+              'https://raw.githubusercontent.com/rajibdpi/dictionary/master/assets/BengaliDictionary.json'),
+        );
         if (response.statusCode == 200) {
           final jsonString = response.body;
           final List<dynamic> jsonData = jsonDecode(jsonString);
@@ -122,7 +124,9 @@ class _WordPageState extends State<WordPage> {
         Expanded(
           child: isLoading
               ? const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    semanticsLabel: 'Loading',
+                  ),
                 )
               : ListView.builder(
                   itemCount: filteredWords.length,
@@ -169,7 +173,9 @@ class _WordPageState extends State<WordPage> {
         Expanded(
           child: isLoading
               ? const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    semanticsLabel: 'Loading',
+                  ),
                 )
               : ListView.builder(
                   itemCount: filteredWords.length,
@@ -245,8 +251,8 @@ class _WordPageState extends State<WordPage> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.update),
-              title: const Text('Last Update'),
+              leading: const Icon(Icons.info),
+              title: const Text('About'),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
                 Navigator.of(context).push(
@@ -285,15 +291,15 @@ class _WordPageState extends State<WordPage> {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: isSearchBarOpen
-            ? withSearchBar()
-            : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: withOutSearchBar(),
-              ),
-      ),
+      body: isSearchBarOpen
+          ? Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: withSearchBar(),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: withOutSearchBar(),
+            ),
     );
   }
 }
