@@ -121,7 +121,7 @@ class _WordPageState extends State<WordPage> {
                 color: Colors.teal,
               ),
               child: Text(
-                'Drawer Menu',
+                'E2B Dictionary',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
