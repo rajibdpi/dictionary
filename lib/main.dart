@@ -146,9 +146,10 @@ class _WordPageState extends State<WordPage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Example Sentences:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
+                                const Text(
+                                  'Example Sentences:',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                                 ...word.sents
                                     .map((sent) => Text('- ${sent ?? ""}')),
                               ],

@@ -14,6 +14,7 @@ class _AboutPageState extends State<AboutPage> {
     return Scaffold(
       appBar: AppBar(
         // actions: [],
+        backgroundColor: Colors.teal,
         title: const Text("About"),
       ),
       body: Center(
