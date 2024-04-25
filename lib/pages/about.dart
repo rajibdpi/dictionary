@@ -15,7 +15,6 @@ class _AboutPageState extends State<AboutPage> {
       appBar: AppBar(
         backgroundColor: Colors.teal,
         // actions: [],
-        backgroundColor: Colors.teal,
         title: const Text("About"),
       ),
       body: Center(
