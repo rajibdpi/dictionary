@@ -4,7 +4,7 @@ class WordDetails extends StatefulWidget {
   final String worden;
   final String wordbn;
   // final String wordbn;
-  WordDetails({required this.worden, required this.wordbn});
+  const WordDetails({super.key, required this.worden, required this.wordbn});
 
   @override
   State<WordDetails> createState() => _WordDetailsState();
